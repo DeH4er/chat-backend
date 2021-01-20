@@ -35,8 +35,24 @@ export class ChannelController {
     return this.channelService.create(createChannelDto, req.user.id);
   }
 
+  @Post(':id/join')
+  join(
+    @Request() req: any,
+    @Param('id', ParseIntPipe) channelId: number
+  ): Promise<void> {
+    return this.channelService.join(channelId, req.user.id);
+  }
+
+  @Post(':id/leave')
+  leave(
+    @Request() req: any,
+    @Param('id', ParseIntPipe) channelId: number
+  ): Promise<void> {
+    return this.channelService.leave(channelId, req.user.id);
+  }
+
   @Get(':id')
-  get(@Param('id', ParseIntPipe) id: number): Promise<Channel> {
-    return this.channelService.getById(id);
+  get(@Param('id', ParseIntPipe) channelId: number): Promise<Channel> {
+    return this.channelService.getByIdWithUsers(channelId);
   }
 }

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
-import { getManager, Repository } from 'typeorm';
+import { getConnection, getManager, Repository } from 'typeorm';
 
 import { Channel } from './channel.entity';
 import { CreateChannelDto } from './create-channel.dto';
@@ -28,14 +28,73 @@ export class ChannelService {
     return this.channelRepository.save(channel);
   }
 
-  getById(id: number): Promise<Channel> {
-    const channelFound = this.channelRepository.findOne(id, {
+  async join(channelId: number, userId: number): Promise<void> {
+    const channelFound = await this.getById(channelId);
+
+    if (!channelFound) {
+      throw new BadRequestException(`Channel ${channelId} hasn't found.`);
+    }
+
+    const channel = await this.getByIdAndUser(channelId, userId);
+
+    if (!!channel) {
+      throw new BadRequestException(
+        `Channel ${channelId} already has a User ${userId}`
+      );
+    }
+
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Channel, 'users')
+      .of(channelFound)
+      .add({ id: userId } as User);
+  }
+
+  async leave(channelId: number, userId: number): Promise<void> {
+    const channel = await this.getByIdAndUser(channelId, userId);
+
+    if (!channel) {
+      throw new BadRequestException(
+        `Channel ${channelId} with User ${userId} hasn't found`
+      );
+    }
+
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Channel, 'users')
+      .of(channel)
+      .remove({ id: userId } as User);
+  }
+
+  async getByIdWithUsers(channelId: number): Promise<Channel> {
+    const channelFound = await this.channelRepository.findOne(channelId, {
       relations: ['users'],
     });
 
     if (!channelFound) {
-      throw new BadRequestException(`Channel ${id} isn't found`);
+      throw new BadRequestException(`Channel ${channelId} hasn't found`);
     }
+
+    return channelFound;
+  }
+
+  async getById(channelId: number): Promise<Channel> {
+    const channelFound = await this.channelRepository.findOne(channelId);
+
+    if (!channelFound) {
+      throw new BadRequestException(`Channel ${channelId} hasn't found`);
+    }
+
+    return channelFound;
+  }
+
+  async getByIdAndUser(channelId: number, userId: number): Promise<Channel> {
+    const channelFound = await getConnection()
+      .createQueryBuilder(Channel, 'channel')
+      .innerJoin('channel.users', 'user')
+      .where('channel.id = :channelId', { channelId })
+      .andWhere('user.id = :userId', { userId })
+      .getOne();
 
     return channelFound;
   }
