@@ -1,4 +1,5 @@
 import { Body, Controller, Post, UsePipes } from '@nestjs/common';
+import { Public } from 'src/decorators/public.decorator';
 import { JoiPipe } from 'src/joi.pipe';
 
 import { AuthService } from './auth.service';
@@ -11,12 +12,14 @@ import { TokenDto } from './token.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @Post('login')
   @UsePipes(new JoiPipe(LoginDtoSchema))
   login(@Body() credentials: LoginDto): Promise<TokenDto> {
     return this.authService.login(credentials);
   }
 
+  @Public()
   @Post('register')
   @UsePipes(new JoiPipe(RegisterDtoSchema))
   register(@Body() registerDto: RegisterDto): Promise<void> {
