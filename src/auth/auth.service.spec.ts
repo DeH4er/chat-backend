@@ -18,7 +18,7 @@ describe('AuthService', () => {
         {
           provide: UserService,
           useValue: {
-            findOneByCredentials(credentials: LoginDto) {
+            getByCredentials(credentials: LoginDto) {
               if (credentials.username === 'admin') {
                 return new User();
               }

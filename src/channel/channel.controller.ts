@@ -28,12 +28,15 @@ export class ChannelController {
 
   @Post()
   @UsePipes(new JoiPipe(CreateChannelDtoSchema))
-  create(@Request() req: any, @Body() createChannelDto: CreateChannelDto) {
-    return this.channelService.create(createChannelDto, req.user);
+  async create(
+    @Request() req: any,
+    @Body() createChannelDto: CreateChannelDto
+  ) {
+    return this.channelService.create(createChannelDto, req.user.id);
   }
 
   @Get(':id')
   get(@Param('id', ParseIntPipe) id: number): Promise<Channel> {
-    return this.channelService.get(id);
+    return this.channelService.getById(id);
   }
 }

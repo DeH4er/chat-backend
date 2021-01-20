@@ -16,17 +16,23 @@ export class ChannelService {
     return this.channelRepository.find();
   }
 
-  create(createChannelDto: CreateChannelDto, creator: User): Promise<Channel> {
+  create(
+    createChannelDto: CreateChannelDto,
+    creatorId: number
+  ): Promise<Channel> {
     const channelManager = getManager();
     const channel = channelManager.create(Channel);
     channel.name = createChannelDto.name;
     channel.messages = [];
-    channel.users = [creator];
+    channel.users = [{ id: creatorId } as User];
     return this.channelRepository.save(channel);
   }
 
-  get(id: number): Promise<Channel> {
-    const channelFound = this.channelRepository.findOne({ id });
+  getById(id: number): Promise<Channel> {
+    const channelFound = this.channelRepository.findOne(id, {
+      relations: ['users'],
+    });
+
     if (!channelFound) {
       throw new BadRequestException(`Channel ${id} isn't found`);
     }

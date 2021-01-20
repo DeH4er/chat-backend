@@ -27,10 +27,14 @@ export class UserService {
     return this.userRepository.save(obj);
   }
 
-  findOneByCredentials(loginDto: LoginDto): Promise<User> {
+  getByCredentials(loginDto: LoginDto): Promise<User> {
     return this.userRepository.findOne({
       username: loginDto.username,
       password: hashPassword(loginDto.password),
     });
+  }
+
+  getById(id: number): Promise<User> {
+    return this.userRepository.findOne(id);
   }
 }

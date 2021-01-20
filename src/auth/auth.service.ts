@@ -14,7 +14,7 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto): Promise<TokenDto> {
-    const user = await this.userService.findOneByCredentials(loginDto);
+    const user = await this.userService.getByCredentials(loginDto);
 
     if (!user) {
       throw new BadRequestException('Username or password is invalid.');
