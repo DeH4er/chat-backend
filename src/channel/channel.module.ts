@@ -5,10 +5,11 @@ import { ChannelController } from './channel.controller';
 import { Channel } from './channel.entity';
 import { ChannelService } from './channel.service';
 import { Message } from './message.entity';
+import { MessageService } from './message.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Channel, Message])],
   controllers: [ChannelController],
-  providers: [ChannelService],
+  providers: [ChannelService, MessageService],
 })
 export class ChannelModule {}

@@ -2,24 +2,35 @@ import {
   Body,
   Controller,
   Get,
+  MessageEvent,
   Param,
   ParseIntPipe,
   Post,
   Request,
+  Sse,
   UsePipes,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Public } from 'src/decorators/public.decorator';
 import { JoiPipe } from 'src/joi.pipe';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Channel } from './channel.entity';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto, CreateChannelDtoSchema } from './create-channel.dto';
+import { CreateMessageDto, CreateMessageDtoSchema } from './create-message.dto';
+import { Message } from './message.entity';
+import { MessageService } from './message.service';
 
 @Controller('api/channel')
 @ApiBearerAuth()
 export class ChannelController {
-  constructor(private channelService: ChannelService) {}
+  constructor(
+    private channelService: ChannelService,
+    private messageService: MessageService
+  ) {}
 
   @Get()
   getAll(): Promise<Channel[]> {
@@ -54,5 +65,30 @@ export class ChannelController {
   @Get(':id')
   get(@Param('id', ParseIntPipe) channelId: number): Promise<Channel> {
     return this.channelService.getByIdWithUsers(channelId);
+  }
+
+  @Post(':id/message')
+  @UsePipes(new JoiPipe(CreateMessageDtoSchema))
+  createMessage(
+    @Body() createMessageDto: CreateMessageDto,
+    @Request() req: any,
+    @Param('id', ParseIntPipe) channelId: number
+  ): Promise<void> {
+    return this.messageService.create(createMessageDto, channelId, req.user.id);
+  }
+
+  @Sse(':id/message-sse')
+  getMessages$(
+    @Param('id', ParseIntPipe) channelId: number
+  ): Observable<MessageEvent> {
+    return this.messageService.getMessages$(channelId).pipe(
+      map((message: Message) => {
+        return {
+          data: {
+            message,
+          },
+        };
+      })
+    );
   }
 }
