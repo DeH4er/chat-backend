@@ -79,9 +79,10 @@ export class ChannelController {
 
   @Sse(':id/message-sse')
   getMessages$(
+    @Request() req: any,
     @Param('id', ParseIntPipe) channelId: number
   ): Observable<MessageEvent> {
-    return this.messageService.getMessages$(channelId).pipe(
+    return this.messageService.getMessages$(channelId, req.user.id).pipe(
       map((message: Message) => {
         return {
           data: {

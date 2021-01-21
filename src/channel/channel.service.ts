@@ -98,4 +98,14 @@ export class ChannelService {
 
     return channelFound;
   }
+
+  async validateUserInChannel(channelId: number, authorId: number) {
+    const channel = await this.getByIdAndUser(channelId, authorId);
+
+    if (!channel) {
+      throw new BadRequestException(
+        `User ${authorId} is not in Channel ${channelId}`
+      );
+    }
+  }
 }
