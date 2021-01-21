@@ -8,7 +8,7 @@ import { RegisterDto, RegisterDtoSchema } from './register.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { TokenDto } from './token.dto';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 

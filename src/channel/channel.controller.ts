@@ -16,7 +16,7 @@ import { Channel } from './channel.entity';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto, CreateChannelDtoSchema } from './create-channel.dto';
 
-@Controller('channel')
+@Controller('api/channel')
 @ApiBearerAuth()
 export class ChannelController {
   constructor(private channelService: ChannelService) {}
