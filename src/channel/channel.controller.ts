@@ -85,9 +85,7 @@ export class ChannelController {
     return this.messageService.getMessages$(channelId, req.user.id).pipe(
       map((message: Message) => {
         return {
-          data: {
-            message,
-          },
+          data: message,
         };
       })
     );
