@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   MessageEvent,
   Param,
   ParseIntPipe,
@@ -13,7 +14,6 @@ import {
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Public } from 'src/decorators/public.decorator';
 import { JoiPipe } from 'src/joi.pipe';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

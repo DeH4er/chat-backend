@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { from, Observable, Subject } from 'rxjs';
-import { filter, switchMap } from 'rxjs/operators';
+import { from, Observable, of, Subject } from 'rxjs';
+import { catchError, filter, switchMap } from 'rxjs/operators';
 import { User } from 'src/user/user.entity';
 import { getManager, Repository } from 'typeorm';
 
@@ -37,6 +37,7 @@ export class MessageService {
     return from(
       this.channelService.validateUserInChannel(channelId, userId)
     ).pipe(
+      catchError(() => of()),
       switchMap(() => this.messages$.asObservable()),
       filter((m: Message) => m.channel.id === channelId)
     );
