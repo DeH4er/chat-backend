@@ -1,5 +1,9 @@
-import * as crypto from 'crypto';
+import { compare, hash as _hash } from 'bcrypt';
 
-export function hashPassword(password: string): string {
-  return crypto.createHmac('sha256', password).digest('hex');
+export function hash(raw: string): Promise<string> {
+  return _hash(raw, 10);
+}
+
+export function compareHashed(raw: string, hashed: string): Promise<boolean> {
+  return compare(raw, hashed);
 }

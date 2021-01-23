@@ -4,7 +4,7 @@ import { LoginDto } from 'src/auth/login.dto';
 import { RegisterDto } from 'src/auth/register.dto';
 import { getManager, Repository } from 'typeorm';
 
-import { hashPassword } from '../utils';
+import { compareHashed } from '../utils';
 import { User } from './user.entity';
 
 @Injectable()
@@ -27,11 +27,27 @@ export class UserService {
     return this.userRepository.save(obj);
   }
 
-  getByCredentials(loginDto: LoginDto): Promise<User> {
-    return this.userRepository.findOne({
-      username: loginDto.username,
-      password: hashPassword(loginDto.password),
-    });
+  async getByCredentials(loginDto: LoginDto): Promise<User> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.username = :username', { username: loginDto.username })
+      .addSelect('user.password')
+      .getOne();
+
+    if (!user) {
+      return null;
+    }
+
+    const isPasswordSame = await compareHashed(
+      loginDto.password,
+      user.password
+    );
+
+    if (!isPasswordSame) {
+      return null;
+    }
+
+    return user;
   }
 
   getById(id: number): Promise<User> {

@@ -6,7 +6,7 @@ import {
   Unique,
 } from 'typeorm';
 
-import { hashPassword } from '../utils';
+import { hash } from '../utils';
 
 @Entity()
 @Unique(['username'])
@@ -21,7 +21,7 @@ export class User {
   password: string;
 
   @BeforeInsert()
-  hashPassword() {
-    this.password = hashPassword(this.password);
+  async hash() {
+    this.password = await hash(this.password);
   }
 }
