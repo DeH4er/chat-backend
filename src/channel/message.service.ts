@@ -30,7 +30,13 @@ export class MessageService {
     message.channel = { id: channelId } as Channel;
     message.author = { id: authorId } as User;
     const createdMessage = await this.messageRepository.save(message);
-    this.messages$.next(createdMessage);
+
+    const messageWithRelations = await this.messageRepository.findOne(
+      createdMessage.id,
+      { relations: ['author', 'channel'] }
+    );
+
+    this.messages$.next(messageWithRelations);
   }
 
   getMessages$(channelId: number, userId: number): Observable<Message> {
