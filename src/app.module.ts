@@ -11,11 +11,13 @@ import { DatabaseModule } from './database.module';
   imports: [
     ConfigModule.forRoot({
       validationSchema: Joi.object({
-        POSTGRES_HOST: Joi.string().required(),
-        POSTGRES_PORT: Joi.number().required(),
-        POSTGRES_USER: Joi.string().required(),
-        POSTGRES_PASSWORD: Joi.string().required(),
-        POSTGRES_DB: Joi.string().required(),
+        TYPEORM_HOST: Joi.string().required(),
+        TYPEORM_PORT: Joi.number().required(),
+        TYPEORM_USERNAME: Joi.string().required(),
+        TYPEORM_PASSWORD: Joi.string().required(),
+        TYPEORM_DATABASE: Joi.string().required(),
+        TYPEORM_SYNCHRONIZE: Joi.boolean().required(),
+        TYPEORM_ENTITIES: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION: Joi.number().required(),
         JWT_REFRESH_EXPIRATION: Joi.number().required(),
