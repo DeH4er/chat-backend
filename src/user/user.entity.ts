@@ -20,8 +20,15 @@ export class User {
   @Column({ select: false })
   password: string;
 
+  @Column({ select: false, nullable: true })
+  refreshToken?: string;
+
   @BeforeInsert()
   async hash() {
     this.password = await hash(this.password);
+
+    if (this.refreshToken) {
+      this.refreshToken = await hash(this.refreshToken);
+    }
   }
 }

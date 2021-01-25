@@ -9,6 +9,8 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtRefreshStrategy } from './jwt-refresh.strategy';
+import { JwtRefreshAuthGuard } from './jwt-refresh-auth.guard';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { JwtAuthGuard } from './jwt-auth.guard';
   providers: [
     AuthService,
     JwtStrategy,
+    JwtRefreshStrategy,
+    JwtRefreshAuthGuard,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

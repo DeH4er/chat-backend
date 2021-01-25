@@ -50,7 +50,27 @@ export class UserService {
     return user;
   }
 
+  async getIfRefreshTokenMatches(refreshToken: any, id: number): Promise<User> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id })
+      .addSelect('user.refreshToken')
+      .getOne();
+
+    if (compareHashed(refreshToken, user.refreshToken)) {
+      return user;
+    }
+  }
+
+  removeRefreshToken(id: number) {
+    return this.userRepository.update(id, { refreshToken: null });
+  }
+
   getById(id: number): Promise<User> {
     return this.userRepository.findOne(id);
+  }
+
+  async setRefreshToken(refreshToken: string, userId: number) {
+    await this.userRepository.update(userId, { refreshToken });
   }
 }
